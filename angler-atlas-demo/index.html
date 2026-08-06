@@ -149,6 +149,8 @@
   var STORAGE_KEY='angler-atlas-beta-v1';
   var state=loadState();
   var currentLocation=state.location||null;
+  var locationMode=currentLocation&&currentLocation.mode||'未定位';
+  var picked=currentLocation?fmtCoord(currentLocation.lat)+','+fmtCoord(currentLocation.lng):'';
   var selectedSpot=null;
   var locationMap=null,locationMarker=null,spotsMap=null,spotMarkers=[];
   var blankImage='data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="100%" height="100%" fill="#e9e6dd"/><text x="50%" y="50%" text-anchor="middle" fill="#77827d" font-size="15">未上传照片</text></svg>');
@@ -198,7 +200,7 @@
     locationMode=mode||'定位';
     picked=fmtCoord(lat)+','+fmtCoord(lng);
     if(locationMap){
-      if(locationMarker)locationMarker.setLatLng([lat,lng]);else locationMarker=L.marker([lat,lng]).addTo(locationMap);
+      if(locationMarker)locationMarker.setLatLng([lat,lng]);else locationMarker=L.circleMarker([lat,lng],{radius:10,color:'#102d28',weight:5,fillColor:'#f0b45a',fillOpacity:1}).addTo(locationMap);
       if(move!==false)locationMap.setView([lat,lng],16);
     }
     $('#pickedLocation').textContent='已选：'+fmtCoord(lat)+', '+fmtCoord(lng)+(accuracy?' · 精度约'+Math.round(accuracy)+'m':'');

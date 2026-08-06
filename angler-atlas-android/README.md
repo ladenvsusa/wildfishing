@@ -1,4 +1,4 @@
-# 野水簿 Android Beta 0.4.0-beta.1
+# 野水簿 Android Beta 0.4.0-beta.2
 
 最低 Android 8.0（API 26），包名 `com.rivertrace.angleratlas`。
 
