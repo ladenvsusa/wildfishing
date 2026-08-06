@@ -194,7 +194,11 @@
     else locationMap.on('click',function(e){var p=wgs84FromGcj(e.latlng.lat,e.latlng.lng);setPickedLocation(p.lat,p.lng,0,'地图选点')});
     spotsMap=L.map('spotsMap',{zoomControl:true,touchZoom:true,dragging:!androidTouch,tap:!androidTouch}).setView([mapStart.lat,mapStart.lng],currentLocation?12:10);
     addChinaBaseMap(spotsMap);
-    if(androidTouch)installAndroidTouchMap(spotsMap,$('#spotsMap'));
+    if(androidTouch)installAndroidTouchMap(spotsMap,$('#spotsMap'),function(point){
+      var tapPoint=spotsMap.latLngToContainerPoint(point),nearest=null,nearestPixels=Infinity;
+      state.spots.forEach(function(spot){var p=gcj02(spot.lat,spot.lng),pixels=tapPoint.distanceTo(spotsMap.latLngToContainerPoint([p.lat,p.lng]));if(pixels<nearestPixels){nearestPixels=pixels;nearest=spot}});
+      if(nearest&&nearestPixels<=42)openSpot(nearest.id);
+    });
     if(currentLocation)setPickedLocation(currentLocation.lat,currentLocation.lng,currentLocation.accuracy||0,currentLocation.mode||'已保存定位',false);
   }
   function installAndroidTouchMap(map,element,onTap){
@@ -310,8 +314,9 @@
     return w;
   }
   function addChinaBaseMap(map){
-    var emptyTile='data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="100%" height="100%" fill="#dce7d6"/></svg>');
-    return L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}',{subdomains:['1','2','3','4'],maxZoom:18,errorTileUrl:emptyTile,attribution:'&copy; 高德地图'}).addTo(map);
+    var layer=L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}',{subdomains:['1','2','3','4'],maxZoom:18,attribution:'&copy; 高德地图'});
+    layer.on('tileerror',function(e){e.tile.style.visibility='hidden'});
+    return layer.addTo(map);
   }
   function openNavigation(kind){
     if(!selectedSpot){toast('请先选择钓点');return}
