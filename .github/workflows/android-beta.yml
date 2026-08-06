@@ -33,13 +33,13 @@ jobs:
       - name: Prepare artifact
         run: |
           mkdir -p dist
-          cp angler-atlas-android/app/build/outputs/apk/debug/app-debug.apk dist/angler-atlas-0.4.0-beta.2.apk
+          cp angler-atlas-android/app/build/outputs/apk/debug/app-debug.apk dist/angler-atlas-0.4.0-beta.3.apk
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v6
         with:
           name: angler-atlas-android-beta
-          path: dist/angler-atlas-0.4.0-beta.2.apk
+          path: dist/angler-atlas-0.4.0-beta.3.apk
           if-no-files-found: error
 
       - name: Publish prerelease for beta tag
@@ -48,7 +48,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: >-
           gh release create "$GITHUB_REF_NAME"
-          dist/angler-atlas-0.4.0-beta.2.apk
-          --title "野水簿 0.4.0 Beta 2"
+          dist/angler-atlas-0.4.0-beta.3.apk
+          --title "野水簿 0.4.0 Beta 3"
           --prerelease
           --generate-notes
