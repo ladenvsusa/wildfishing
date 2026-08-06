@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>野水簿 Beta</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <style>
+    :root{--ink:#102d28;--paper:#f4f0e7;--cream:#fdfaf2;--teal:#3f7e77;--orange:#f0b45a;--muted:#77827d;--line:rgba(16,45,40,.11);font-family:Inter,"Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;color:var(--ink)}
+    *{box-sizing:border-box}body{margin:0;background:#dfe5df;min-height:100vh;display:grid;place-items:center}.phone{width:min(100%,430px);height:min(100vh,920px);background:var(--paper);position:relative;overflow:hidden;box-shadow:0 28px 80px rgba(16,45,40,.22)}.screen{height:100%;overflow-y:auto;padding-bottom:104px;scrollbar-width:none}.screen::-webkit-scrollbar,.sheet::-webkit-scrollbar{display:none}.page{display:none}.page.active{display:block}.hero{background:var(--ink);color:white;padding:25px 20px 26px;border-radius:0 0 28px 28px}.brand{font-size:12px;font-weight:900;color:var(--orange);letter-spacing:.18em}.hero-row{display:flex;justify-content:space-between;align-items:flex-start;margin-top:13px}.hero h1{font-size:27px;line-height:1.1;margin:0}.hero p{font-size:11px;color:#bfd0cb;margin:7px 0 0}.location-btn{border:0;background:#20423c;color:white;border-radius:999px;padding:8px 10px;font-size:10px;font-weight:800;cursor:pointer}.body{padding:20px 16px}.section-title{font-weight:900;font-size:13px;margin:0 4px 10px;display:flex;align-items:center;justify-content:space-between}.section-title small{font-size:9px;color:var(--teal);font-weight:700}.card{background:var(--cream);border:1px solid rgba(16,45,40,.04);border-radius:22px;padding:18px;margin-bottom:20px;box-shadow:0 7px 20px rgba(16,45,40,.035)}.primary,.secondary{width:100%;border:0;border-radius:15px;padding:15px;font-size:13px;font-weight:900;cursor:pointer}.primary{background:var(--orange);color:var(--ink)}.secondary{background:#e2ece8;color:var(--teal)}.primary:active,.secondary:active,.condition:active{transform:scale(.99)}
+    .recommend{background:var(--ink);color:white;position:relative;overflow:hidden}.recommend:after{content:"";position:absolute;width:160px;height:160px;border:1px solid rgba(240,180,90,.19);border-radius:50%;right:-64px;top:-55px;box-shadow:0 0 0 28px rgba(240,180,90,.035),0 0 0 56px rgba(240,180,90,.025)}.score{display:inline-block;background:var(--orange);color:var(--ink);font-size:10px;font-weight:900;border-radius:999px;padding:7px 10px}.recommend h2{font-size:21px;margin:16px 0 6px;position:relative;z-index:1}.recommend p{font-size:11px;color:#b9cdc7;margin:0 0 14px}.tags{display:flex;gap:7px;flex-wrap:wrap}.tag,.chip{background:#21453e;color:#edf7f4;border-radius:999px;padding:7px 10px;font-size:10px;border:0;font-weight:800}.arrow{position:absolute;right:22px;bottom:26px;color:var(--orange);font-size:30px}.condition-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:18px}.condition{border:0;background:var(--cream);border-radius:16px;padding:13px;text-align:left;min-height:66px;cursor:pointer;color:var(--ink);box-shadow:0 5px 14px rgba(16,45,40,.03)}.condition small{display:block;font-size:9px;color:var(--muted);margin-bottom:7px}.condition b{display:block;font-size:12px}.condition .edit{float:right;color:var(--teal);font-size:12px}.condition.changed{outline:2px solid rgba(63,126,119,.22)}
+    .select{width:100%;border:0;background:#e3ece8;color:var(--ink);font:800 11px inherit;border-radius:12px;padding:10px 12px;outline:none}.water-head{display:flex;justify-content:space-between;align-items:end;margin:13px 0 8px}.station{font-size:10px;font-weight:800}.level{font-size:27px;font-weight:900;color:var(--teal);margin-top:3px}.delta{text-align:right;font-size:9px;color:var(--muted);line-height:1.6}.reference{color:var(--orange);font-weight:900}.terrain{height:122px;border-radius:15px;overflow:hidden;background:#dcebe7;margin:10px 0}.terrain svg{width:100%;height:100%;display:block}.cross-row{display:grid;grid-template-columns:1fr auto;gap:9px;margin:10px 0}.tiny-btn{border:0;border-radius:12px;background:var(--ink);color:white;padding:0 13px;font-size:10px;font-weight:800;cursor:pointer}.winter-box{display:grid;grid-template-columns:88px 1fr;gap:12px;align-items:center;background:#eee9df;border-radius:15px;padding:10px;margin-top:10px}.winter-box img{width:88px;height:64px;border-radius:11px;object-fit:cover}.winter-box b{font-size:10px}.winter-box p{font-size:9px;color:var(--muted);margin:4px 0}.winter-actions{display:flex;gap:6px;align-items:center}.winter-actions input[type=number]{width:74px;border:1px solid var(--line);border-radius:9px;padding:7px;background:white;color:var(--ink)}.upload-mini{background:#e0e9e5;color:var(--teal);font-size:9px;font-weight:800;border-radius:9px;padding:8px;cursor:pointer}.upload-mini input{display:none}.estimate-result{font-size:10px;color:var(--teal);font-weight:800;text-align:center;margin:9px 0 0}
+    .map{height:250px;border-radius:22px;background:#dce7d6;position:relative;overflow:hidden;margin-bottom:20px}.map svg{width:100%;height:100%}.pin{position:absolute;transform:translate(-50%,-50%);background:var(--cream);width:24px;height:24px;border-radius:50%;border:6px solid var(--ink);box-shadow:0 3px 10px #102d2840;cursor:pointer}.pin.active{width:30px;height:30px;border-color:var(--orange)}.pin span{position:absolute;white-space:nowrap;top:-25px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:900}.spot{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:8px;padding:15px;background:var(--cream);border-radius:18px;margin-bottom:10px;cursor:pointer}.star{color:var(--orange);font-size:19px}.spot h3{font-size:13px;margin:0 0 5px}.spot p{font-size:9px;color:var(--teal);font-weight:800;margin:0 0 4px}.spot small{font-size:9px;color:var(--muted)}.parking{display:block;margin-top:4px}.distance{font-size:10px;font-weight:900}
+    .photo-pair{display:grid;grid-template-columns:1fr 1fr;gap:9px}.photo-upload{display:block;height:132px;border-radius:17px;background:#e9e6dd;border:1px dashed #abb7ae;overflow:hidden;position:relative;cursor:pointer}.photo-upload input{display:none}.photo-upload img{width:100%;height:100%;object-fit:cover;display:none}.photo-placeholder{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-size:10px;color:var(--muted);padding:10px}.photo-placeholder b{display:block;color:var(--ink);font-size:21px;margin-bottom:5px}.form-meta{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.field{background:var(--cream);border-radius:14px;padding:11px}.field label{display:block;color:var(--muted);font-size:9px;margin-bottom:6px}.field input,.field select{width:100%;border:0;background:transparent;font-weight:800;color:var(--ink);outline:none}.catch-row{display:grid;grid-template-columns:1.25fr .65fr .8fr 28px;gap:6px;align-items:center;background:var(--cream);border-radius:15px;padding:10px;margin-bottom:8px}.catch-row select,.catch-row input{width:100%;border:1px solid var(--line);border-radius:9px;padding:8px 6px;background:white;color:var(--ink);font-size:10px}.remove{border:0;background:#f2dfd8;color:#9d4d37;border-radius:50%;width:27px;height:27px;cursor:pointer}.summary-bar{display:flex;justify-content:space-between;background:var(--ink);color:white;border-radius:15px;padding:13px;margin:12px 0;font-size:11px}.summary-bar b{color:var(--orange)}.step{display:none}.step.active{display:block}.preview-card{background:var(--cream);border-radius:19px;padding:16px;margin-bottom:12px}.preview-card h3{font-size:13px;margin:0 0 10px}.preview-row{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:8px 0;font-size:10px}.preview-row:last-child{border:0}.preview-photos{display:grid;grid-template-columns:1fr 1fr;gap:8px}.preview-photos img{width:100%;height:110px;object-fit:cover;border-radius:13px;background:#e9e6dd}.actions{display:grid;grid-template-columns:1fr 1.4fr;gap:9px}.success{text-align:center;padding:80px 24px}.success-mark{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:var(--teal);color:white;font-size:34px;margin:0 auto 18px}.success h2{font-size:21px}.success p{font-size:11px;color:var(--muted);line-height:1.7}
+    .stats{background:var(--ink);display:grid;grid-template-columns:repeat(3,1fr);color:white}.stat b{font-size:24px}.stat:nth-child(2) b{color:var(--orange)}.stat small{display:block;color:#bdcdc9;font-size:9px;margin-top:5px}.history{background:var(--cream);border-radius:18px;padding:15px;margin-bottom:10px}.history time{font-size:9px;color:var(--teal);font-weight:900}.history h3{font-size:13px;margin:7px 0}.history p{font-size:9px;color:var(--muted);margin:0}.history .badge{float:right;background:#e2ece8;color:var(--teal);border-radius:999px;padding:6px 8px;font-size:9px;font-weight:800}.history-upload{display:block;background:#e2ece8;color:var(--teal);border-radius:16px;padding:15px;text-align:center;font-size:11px;font-weight:900;cursor:pointer}.history-upload input{display:none}.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.metric{background:var(--cream);border-radius:18px;padding:16px}.metric b{font-size:24px;color:var(--teal)}.metric small{display:block;color:var(--muted);font-size:9px;margin-top:5px}.method-editor{display:flex;gap:7px;flex-wrap:wrap}.method-chip{border:1px solid var(--line);background:var(--cream);color:var(--ink);border-radius:999px;padding:9px 12px;font-size:10px;font-weight:800;cursor:pointer}.method-chip.selected{background:var(--orange);border-color:var(--orange)}
+    .nav{position:absolute;left:0;right:0;bottom:0;height:88px;background:rgba(253,250,242,.96);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);align-items:center;padding-bottom:max(4px,env(safe-area-inset-bottom));backdrop-filter:blur(15px);z-index:10}.nav button{border:0;background:none;color:#87908c;font-size:9px;display:grid;place-items:center;gap:5px;cursor:pointer}.nav .ico{font-size:19px;line-height:1}.nav button.active{color:var(--ink);font-weight:900}.nav button.active .ico{color:var(--teal)}.nav button:nth-child(3) .ico{width:42px;height:42px;background:var(--ink);color:white;border-radius:50%;display:grid;place-items:center;font-size:25px;margin-top:-21px}.nav button:nth-child(3).active .ico{background:var(--orange);color:var(--ink)}
+    .backdrop{position:absolute;inset:0;background:#071d1abe;z-index:30;display:none}.backdrop.open{display:block}.sheet{position:absolute;left:10px;right:10px;bottom:10px;background:var(--cream);border-radius:26px;padding:22px;z-index:31;transform:translateY(110%);transition:.25s;max-height:86%;overflow-y:auto}.backdrop.open .sheet{transform:translateY(0)}.sheet-close{float:right;border:0;background:none;font-size:23px;color:var(--muted);cursor:pointer}.sheet h2{font-size:20px;margin:2px 0 6px}.sheet-sub{font-size:10px;color:var(--muted);margin:0 0 16px}.choice-grid{display:flex;gap:8px;flex-wrap:wrap}.choice{border:1px solid var(--line);background:white;border-radius:999px;padding:10px 13px;font-size:11px;font-weight:800;color:var(--ink);cursor:pointer}.choice.selected{background:var(--orange);border-color:var(--orange)}.location-map{height:260px;border-radius:18px;background:#dce7d6;position:relative;overflow:hidden;cursor:crosshair;margin:12px 0}.location-map svg{width:100%;height:100%}.map-cursor{position:absolute;width:28px;height:28px;background:var(--orange);border:7px solid var(--ink);border-radius:50%;transform:translate(-50%,-50%);left:53%;top:48%;pointer-events:none}.spot-photo{width:100%;height:190px;object-fit:cover;border-radius:17px;margin:12px 0}.spot-sheet-label{font-size:9px;color:var(--muted);margin:18px 0 7px}.route-map{height:135px;background:#dce7d6;border-radius:17px;overflow:hidden}.route-map svg{width:100%;height:100%}.route-stats{display:grid;grid-template-columns:repeat(3,1fr);background:var(--ink);color:white;border-radius:15px;padding:12px;margin-top:8px}.route-stats b{font-size:14px}.route-stats small{display:block;color:#bdcdc9;font-size:8px;margin-top:4px}.poison{background:#e0eee2;border-radius:15px;padding:13px}.poison b{font-size:12px;color:var(--teal)}.poison p{font-size:9px;margin:5px 0 0}.catch-list-mini{border-top:1px solid var(--line)}.catch-mini{display:grid;grid-template-columns:70px 1fr auto;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-size:10px}.catch-mini b{color:var(--teal)}.toast{position:absolute;left:50%;bottom:102px;transform:translate(-50%,20px);background:#102d28ed;color:white;border-radius:999px;padding:10px 16px;font-size:10px;opacity:0;transition:.25s;pointer-events:none;z-index:50;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}
+    @media(min-width:431px){.phone{border-radius:34px;border:8px solid #102d28}.hero{padding-top:30px}}
+  </style>
+</head>
+<body>
+<main class="phone" aria-label="野水簿 Android Beta">
+  <section id="home" class="screen page active">
+    <header class="hero"><div class="brand">野水簿 BETA</div><div class="hero-row"><div><h1>今天去哪儿钓？</h1><p id="todayMeta">定位后按真实钓点生成推荐</p></div><button class="location-btn" id="locationBtn">⌖ 尚未定位</button></div></header>
+    <div class="body">
+      <div class="section-title">今日推荐 <small>根据下方条件自动生成</small></div>
+      <article class="card recommend"><span class="score" id="score">等待数据</span><h2 id="recommendName">先添加一个真实钓点</h2><p id="reason">保存钓点和出钓记录后，这里会按条件生成推荐。</p><div class="tags"><span class="tag" id="recFish">目标鱼</span><span class="tag" id="recMethod">台钓</span><span class="tag" id="recDistance">距离待计算</span></div><span class="arrow">›</span></article>
+      <div class="section-title">出钓条件 <small>六项均可点击编辑</small></div>
+      <div class="condition-grid">
+        <button class="condition" data-condition="fish"><span class="edit">›</span><small>目标鱼</small><b id="cond-fish">鲫鱼、鳊鱼</b></button>
+        <button class="condition" data-condition="time"><span class="edit">›</span><small>可用时间</small><b id="cond-time">4小时</b></button>
+        <button class="condition" data-condition="distance"><span class="edit">›</span><small>最远距离</small><b id="cond-distance">40km内</b></button>
+        <button class="condition" data-condition="poison"><span class="edit">›</span><small>是否需要跑毒</small><b id="cond-poison">不接受</b></button>
+        <button class="condition" data-condition="method"><span class="edit">›</span><small>钓法类型</small><b id="cond-method">台钓</b></button>
+        <button class="condition" data-condition="budget"><span class="edit">›</span><small>预计花费</small><b id="cond-budget">≤ ¥150</b></button>
+      </div>
+      <button class="primary" id="reroll">按当前条件重新推荐</button>
+      <div class="section-title" style="margin-top:24px">水位与河床 <small>水文站 + 钓点断面</small></div>
+      <article class="card">
+        <select id="stationSelect" class="select" aria-label="参考水文站"><option value="5" selected>定位武汉 → 自动参考：汉口</option><option value="0">寸滩 · 长江干流</option><option value="1">武隆 · 乌江</option><option value="2">宜昌 · 长江干流</option><option value="3">沙市 · 长江干流</option><option value="4">莲花塘 · 长江干流</option><option value="6">九江 · 长江干流</option><option value="7">大通 · 长江干流</option><option value="8">七里山 · 洞庭湖湖口</option><option value="9">湖口 · 鄱阳湖</option><option value="11">三峡水库</option><option value="13">丹江口水库</option></select><button class="secondary" id="refreshWater" style="margin-top:8px;padding:11px">↻ 一键在线获取实时水位</button>
+        <div class="water-head"><div><div class="station"><span id="stationName">汉口</span>实时水位</div><div class="level"><span id="levelText">--</span>m</div></div><div class="delta"><span id="waterMeasuredAt">尚未获取</span><br>长江水文网 · <span id="trendText">--</span><br><span class="reference">估算水深 <span id="depthText">--</span>m</span></div></div>
+        <div class="cross-row"><select id="sectionSelect" class="select" aria-label="钓点断面"><option value="">钓点断面：请先保存钓点</option></select><button class="tiny-btn" id="estimateBtn">重新估算</button></div>
+        <div class="terrain"><svg viewBox="0 0 330 122" preserveAspectRatio="none"><defs><linearGradient id="bed" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#cda873"/><stop offset="1" stop-color="#8e6545"/></linearGradient><pattern id="waves" width="40" height="13" patternUnits="userSpaceOnUse"><path d="M0 6 Q10 1 20 6 T40 6" fill="none" stroke="#bfe2dc" stroke-width="1" opacity=".6"/></pattern></defs><path id="bedPath" d="M0 25 C58 32 57 104 119 94 C167 86 165 58 211 67 C264 79 277 39 330 27 L330 122 L0 122Z" fill="url(#bed)"/><rect id="waterRect" x="0" y="55" width="330" height="67" fill="#3f7e77" opacity=".86"/><rect id="waveRect" x="0" y="55" width="330" height="67" fill="url(#waves)"/><g fill="#f0b45a"><ellipse cx="112" cy="92" rx="5" ry="2.5"/><path d="M107 92l-6-4v8z"/></g></svg></div>
+        <div class="winter-box"><img id="winterPhoto" alt="冬季最低水位钓点照片" style="display:none"><div><b>冬季最低水位资料</b><p id="winterStatus">尚未上传照片和对应水位</p><div class="winter-actions"><label class="upload-mini">上传照片<input id="winterInput" type="file" accept="image/*"></label><input id="winterLevel" type="number" step="0.01" placeholder="水位" aria-label="照片对应水位"><span style="font-size:9px">m</span></div></div></div>
+        <div class="estimate-result" id="estimateResult">根据冬季照片、历史断面与当前水位估算</div>
+      </article>
+    </div>
+  </section>
+
+  <section id="spots" class="screen page"><header class="hero"><div class="brand">野水簿 BETA</div><div class="hero-row"><div><h1>我的钓点</h1><p>地图选点后保存，数据仅保存在本机</p></div><button class="location-btn open-location">＋ 新增钓点</button></div></header><div class="body"><div class="map" id="spotsMap"></div><div class="section-title">已保存钓点 <small id="spotCount">0个</small></div><div id="spotList"><article class="card"><p class="sheet-sub" style="margin:0">还没有钓点，点击右上角新增。</p></article></div></div></section>
+
+  <section id="log" class="screen page"><header class="hero"><div class="brand">野水簿</div><div class="hero-row"><div><h1>记录这次出钓</h1><p>逐条录入鱼获，预览后再提交</p></div><button class="location-btn open-location">⌖ 武汉</button></div></header><div class="body"><div id="logForm" class="step active"><div class="section-title">照片 <small>鱼获与钓点分开上传</small></div><div class="photo-pair"><label class="photo-upload"><input id="catchPhotoInput" type="file" accept="image/*"><img id="catchPhotoPreview" alt="鱼获照片预览"><span class="photo-placeholder" id="catchPhotoPlaceholder"><span><b>＋</b>上传鱼获照片</span></span></label><label class="photo-upload"><input id="spotPhotoInput" type="file" accept="image/*"><img id="spotPhotoPreview" alt="钓点照片预览"><span class="photo-placeholder" id="spotPhotoPlaceholder"><span><b>＋</b>上传钓点照片</span></span></label></div><div class="form-meta"><div class="field"><label>钓点</label><select id="logSpot"><option>府河 · 老闸口回水湾</option><option>汉江 · 蔡甸桥下深坎</option><option>东荆河 · 芦苇湾</option></select></div><div class="field"><label>出钓日期</label><input id="logDate" type="date" value="2026-08-05"></div></div><div class="section-title" style="margin-top:20px">鱼获明细 <small>每个鱼种单独一条</small></div><div id="catchRows"></div><button class="secondary" id="addCatch">＋ 添加下一个鱼种</button><div class="summary-bar"><span>合计 <b id="totalKinds">1</b> 种 / <b id="totalQty">3</b> 尾</span><span><b id="totalWeight">1.8</b>kg</span></div><button class="primary" id="previewSubmit">预览本次提交</button></div><div id="logPreview" class="step"><div class="section-title">提交预览 <small>确认无误后提交</small></div><div class="preview-card"><h3 id="previewSpot">府河 · 老闸口回水湾</h3><div class="preview-photos"><img id="previewCatchPhoto" alt="鱼获照片"><img id="previewSpotPhoto" src="assets/fishing-spot-winter-demo.png" alt="钓点照片"></div></div><div class="preview-card"><h3>鱼获汇总</h3><div id="previewItems"></div><div class="summary-bar"><span>总计 <b id="previewQty">3</b> 尾</span><span><b id="previewWeight">1.8</b>kg</span></div></div><div class="preview-card"><div class="preview-row"><span>日期</span><b id="previewDate">2026-08-05</b></div><div class="preview-row"><span>参考水文站</span><b id="previewStation">汉口 20.62m</b></div><div class="preview-row"><span>天气</span><b>晴 · 29℃ · 东南风2级</b></div></div><div class="actions"><button class="secondary" id="editLog">返回编辑</button><button class="primary" id="finalSubmit">确认提交</button></div></div><div id="logSuccess" class="step success"><div class="success-mark">✓</div><h2>本次出钓已保存</h2><p>鱼获、钓点照片、水位与天气已关联。<br>这条记录会参与后续钓点推荐。</p><button class="primary" id="newLog">再记一次</button></div></div></section>
+
+  <section id="history" class="screen page"><header class="hero"><div class="brand">野水簿 BETA</div><div class="hero-row"><div><h1>出钓记录</h1><p id="historySummary">尚无出钓记录</p></div><button class="location-btn">历史</button></div></header><div class="body"><div class="card stats"><div class="stat"><b id="historyWeight">0.0</b><small>kg 本月鱼获</small></div><div class="stat"><b id="historyRate">--</b><small>有获率</small></div><div class="stat"><b id="historyTrips">0</b><small>次出钓</small></div></div><div class="section-title">最近记录</div><div id="historyList"><article class="history"><p>还没有记录，去“录入”页提交第一次出钓。</p></article></div><label class="history-upload"><input id="historyInput" type="file" accept="image/*,.csv" multiple><span id="historyUploadText">上传历史鱼获（照片 / CSV）</span></label></div></section>
+
+  <section id="profile" class="screen page"><header class="hero"><div class="brand">野水簿 BETA</div><div class="hero-row"><div><h1>我的数据</h1><p>依据本机真实记录自动统计</p></div><button class="location-btn" id="refreshProfile">↻ 刷新</button></div></header><div class="body"><div class="metric-grid"><div class="metric"><b id="monthTrips">0</b><small>月出钓次数</small></div><div class="metric"><b id="monthWeight">0.0kg</b><small>月出钓量</small></div><div class="metric"><b id="yearTrips">0</b><small>年出钓次数</small></div><div class="metric"><b id="yearWeight">0.0kg</b><small>年出钓量</small></div></div><div class="section-title" style="margin-top:22px">常钓鱼种</div><article class="card"><div class="tags" id="commonFish"><span class="chip" style="background:#e2ece8;color:var(--teal)">暂无数据</span></div></article><div class="section-title">常用钓法 <small>点击选择后刷新数据</small></div><article class="card"><div class="method-editor" id="methodEditor"><button class="method-chip selected">台钓</button><button class="method-chip">路亚</button><button class="method-chip">海竿</button><button class="method-chip">船钓</button><button class="method-chip">耙子</button></div><p style="font-size:10px;color:var(--muted);margin:14px 0 0">当前画像：<b id="commonMethod" style="color:var(--teal)">台钓</b></p></article><button class="primary" id="applyMethod">保存钓法并刷新推荐</button></div></section>
+
+  <div class="backdrop" id="conditionSheet"><article class="sheet"><button class="sheet-close" data-close="conditionSheet">×</button><h2 id="conditionTitle">编辑条件</h2><p class="sheet-sub" id="conditionSub">请选择</p><div class="choice-grid" id="conditionChoices"></div><button class="primary" id="saveCondition" style="margin-top:20px">保存条件</button></article></div>
+  <div class="backdrop" id="locationSheet"><article class="sheet"><button class="sheet-close" data-close="locationSheet">×</button><h2>选择定位</h2><p class="sheet-sub">使用系统真实定位，或在地图上点击一个实际坐标</p><button class="secondary" id="autoLocate">⌖ 获取当前真实位置</button><div class="location-map" id="locationMap"><p style="padding:20px;font-size:11px">地图正在加载…</p></div><p class="sheet-sub" id="pickedLocation">尚未获取位置</p><div class="field" style="margin-bottom:9px"><label>保存为钓点（可选）</label><input id="newSpotName" placeholder="输入钓点名称"></div><div class="actions"><button class="secondary" id="saveSpot">保存为钓点</button><button class="primary" id="confirmLocation">仅确认定位</button></div></article></div>
+  <div class="backdrop" id="spotSheet"><article class="sheet"><button class="sheet-close" data-close="spotSheet">×</button><h2 id="spotTitle">钓点详情</h2><p class="sheet-sub" id="spotSub">尚无鱼获记录</p><img id="spotPhotoDetail" class="spot-photo" alt="钓点照片" style="display:none"><div class="spot-sheet-label">真实坐标与导航</div><p class="sheet-sub" id="spotCoords">--</p><div class="actions"><button class="secondary" id="parkingSearch">高德搜索停车场</button><button class="primary" id="navigateSpot">高德导航到钓点</button></div><div class="spot-sheet-label">近5次钓鱼记录</div><div class="catch-list-mini" id="spotHistory"><p class="sheet-sub">尚无记录</p></div></article></div>
+  <nav class="nav" aria-label="主导航"><button class="active" data-page="home"><span class="ico">⌂</span>推荐</button><button data-page="spots"><span class="ico">●</span>钓点</button><button data-page="log"><span class="ico">＋</span>录入</button><button data-page="history"><span class="ico">≋</span>记录</button><button data-page="profile"><span class="ico">○</span>我的</button></nav>
+  <div class="toast" id="toast">已更新</div>
+</main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script type="text/plain" id="legacy-demo-disabled">
+  var $=function(s){return document.querySelector(s)},$$=function(s){return document.querySelectorAll(s)};
+  var timer;function toast(msg){var t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(timer);timer=setTimeout(function(){t.classList.remove('show')},1800)}
+  function openSheet(id){$('#'+id).classList.add('open')}function closeSheet(id){$('#'+id).classList.remove('open')}
+  $$('.sheet-close').forEach(function(b){b.onclick=function(){closeSheet(b.dataset.close)}});$$('.backdrop').forEach(function(b){b.addEventListener('click',function(e){if(e.target===b)closeSheet(b.id)})});
+  $$('.nav button').forEach(function(btn){btn.onclick=function(){$$('.nav button,.page').forEach(function(el){el.classList.remove('active')});btn.classList.add('active');$('#'+btn.dataset.page).classList.add('active');$('#'+btn.dataset.page).scrollTop=0}});
+
+  var locationMode='自动',picked='武汉市府河附近';function showLocation(){openSheet('locationSheet')}$('#locationBtn').onclick=showLocation;$$('.open-location').forEach(function(b){b.onclick=showLocation});
+  $('#autoLocate').onclick=function(){locationMode='自动';picked='武汉市';$('#pickedLocation').textContent='已选：武汉市 · 自动定位';$('#mapCursor').style.left='53%';$('#mapCursor').style.top='48%';toast('已恢复自动定位')};
+  $('#locationMap').addEventListener('click',function(e){var r=e.currentTarget.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*100,y=(e.clientY-r.top)/r.height*100;$('#mapCursor').style.left=x+'%';$('#mapCursor').style.top=y+'%';locationMode='手选';picked='武汉市手选钓点';$('#pickedLocation').textContent='已选：武汉市手选点 · 114.'+Math.round(10+x)+'°E, 30.'+Math.round(40+y)+'°N'});
+  $('#confirmLocation').onclick=function(){$('#locationBtn').textContent='⌖ 武汉 · '+locationMode;closeSheet('locationSheet');toast('定位已更新，参考水文站自动匹配汉口')};
+
+  var locationMode='未定位',picked='';
+  var conditions={fish:['鲫鱼','鳊鱼'],time:['4小时'],distance:['40km内'],poison:['不接受'],method:['台钓'],budget:['≤ ¥150']};
+  var configs={fish:{title:'选择目标鱼',sub:'最多可选择多个鱼种',multi:true,choices:['鲫鱼','鳊鱼','草鱼','翘嘴','鳜鱼','鳡鱼','其他']},time:{title:'可用时间',sub:'预计本次完整出钓时间',choices:['2小时','4小时','6小时','半天','全天']},distance:{title:'最远距离',sub:'从当前位置计算驾车距离',choices:['20km内','40km内','60km内','100km内','不限']},poison:{title:'是否接受跑毒',sub:'跑毒指需要提前撤离或转移钓位',choices:['不接受','可接受轻度','可接受','仅提醒']},method:{title:'钓法类型',sub:'选择本次希望使用的钓法',choices:['台钓','路亚','海竿','船钓','耙子']},budget:{title:'预计花费',sub:'包含交通、饵料、停车等',choices:['≤ ¥50','≤ ¥100','≤ ¥150','≤ ¥300','不限']}};
+  var editingKey='fish';$$('.condition').forEach(function(btn){btn.onclick=function(){editingKey=btn.dataset.condition;var cfg=configs[editingKey];$('#conditionTitle').textContent=cfg.title;$('#conditionSub').textContent=cfg.sub;var html='';cfg.choices.forEach(function(v){html+='<button class="choice '+(conditions[editingKey].indexOf(v)>=0?'selected':'')+'" data-value="'+v+'">'+v+'</button>'});$('#conditionChoices').innerHTML=html;$('#conditionChoices').querySelectorAll('.choice').forEach(function(c){c.onclick=function(){if(cfg.multi){c.classList.toggle('selected')}else{$('#conditionChoices').querySelectorAll('.choice').forEach(function(x){x.classList.remove('selected')});c.classList.add('selected')}}});openSheet('conditionSheet')}});
+  $('#saveCondition').onclick=function(){var chosen=[];$$('#conditionChoices .selected').forEach(function(c){chosen.push(c.dataset.value)});if(!chosen.length){toast('请至少选择一项');return}conditions[editingKey]=chosen;$('#cond-'+editingKey).textContent=chosen.join('、');$('.condition[data-condition="'+editingKey+'"]').classList.add('changed');if(editingKey==='method')$('#recMethod').textContent=chosen[0];if(editingKey==='fish')$('#recFish').textContent=chosen[0];closeSheet('conditionSheet');toast('条件已保存，可重新生成推荐')};
+  var recs=[['府河 · 老闸口回水湾','汉口水位平稳，目标鱼匹配，停车步行620m','92'],['汉江 · 蔡甸桥下深坎','深坎适合路亚，桥西停车步行380m','87'],['东荆河 · 芦苇湾','近岸草区活跃，需预留60分钟返程','84']],recIndex=0;
+  $('#reroll').onclick=function(){recIndex=(recIndex+1)%recs.length;$('#recommendName').textContent=recs[recIndex][0];$('#reason').textContent=recs[recIndex][1];$('#score').textContent='匹配 '+recs[recIndex][2]+'%';toast('已按六项条件重新生成推荐')};
+
+  var hydro=[{name:'寸滩',level:171.48,trend:'回落'},{name:'武隆',level:176.08,trend:'上涨'},{name:'宜昌',level:44.61,trend:'回落'},{name:'沙市',level:36.51,trend:'回落'},{name:'莲花塘',level:26.78,trend:'上涨'},{name:'汉口',level:20.62,trend:'平稳'},{name:'九江',level:14.90,trend:'回落'},{name:'大通',level:9.86,trend:'回落'},{name:'七里山',level:26.78,trend:'上涨'},{name:'湖口',level:14.32,trend:'平稳'},{name:'茅坪(二)',level:155.01,trend:'上涨'},{name:'三峡水库',level:155.01,trend:'上涨'},{name:'龙王庙',level:162.22,trend:'上涨'},{name:'丹江口水库',level:162.22,trend:'上涨'}];
+  var bedPaths={oldgate:'M0 25 C58 32 57 104 119 94 C167 86 165 58 211 67 C264 79 277 39 330 27 L330 122 L0 122Z',bridge:'M0 30 C70 35 88 70 140 72 C185 74 180 110 224 105 C275 99 286 43 330 31 L330 122 L0 122Z',reeds:'M0 28 C62 33 92 75 130 82 C183 92 209 76 247 67 C282 58 300 37 330 29 L330 122 L0 122Z'};
+  function estimateTerrain(){var current=parseFloat($('#levelText').textContent),low=parseFloat($('#winterLevel').value)||current;$('#depthText').textContent=Math.max(0,current-low).toFixed(2);$('#estimateResult').textContent='已用冬季照片 '+low.toFixed(2)+'m 与当前 '+current.toFixed(2)+'m 估算';var n=Math.max(0,Math.min(1,(current-low)/4)),y=78-n*42;$('#waterRect').setAttribute('y',y);$('#waterRect').setAttribute('height',122-y);$('#waveRect').setAttribute('y',y);$('#waveRect').setAttribute('height',122-y);toast('当前地形已重新估算')}
+  $('#stationSelect').onchange=function(){var s=hydro[+this.value];$('#stationName').textContent=s.name;$('#levelText').textContent=s.level.toFixed(2);$('#trendText').textContent=s.trend;estimateTerrain()};$('#sectionSelect').onchange=function(){$('#bedPath').setAttribute('d',bedPaths[this.value]);var levels={oldgate:18.24,bridge:18.48,reeds:17.91};$('#winterLevel').value=levels[this.value];$('#winterStatus').textContent='已关联历史最低水位照片 · '+levels[this.value].toFixed(2)+'m';estimateTerrain()};$('#estimateBtn').onclick=estimateTerrain;
+  $('#winterInput').onchange=function(e){if(e.target.files.length){$('#winterPhoto').src=URL.createObjectURL(e.target.files[0]);$('#winterStatus').textContent='新照片待确认水位';toast('冬季低水位照片已添加')}};
+
+  var spotData={oldgate:{title:'府河 · 老闸口回水湾',fish:'鳊鱼、鲫鱼、黄颡鱼',park:'府河江滩3号停车场',meta:'免费 · 约24个车位 · 到钓点620m',walk:'620m',time:'约9分钟',poison:'✓ 当前无需跑毒',reason:'水位平稳、无强降雨，预留45分钟返程缓冲。',history:[['08-05','鳊鱼3尾 1.8kg','1.1kg'],['07-26','鲫鱼12尾 2.2kg','0.4kg'],['07-18','鳊鱼5尾 3.6kg','1.3kg'],['07-06','黄颡鱼8尾 1.4kg','0.3kg'],['06-29','鳊鱼2尾 1.9kg','1.2kg']]},bridge:{title:'汉江 · 蔡甸桥下深坎',fish:'鲤鱼、翘嘴、鳜鱼',park:'蔡甸桥西停车带',meta:'路边停车位 · 到钓点380m',walk:'380m',time:'约6分钟',poison:'⚠ 建议18:30前撤离',reason:'傍晚可能上涨且桥下回程较暗，建议天黑前返回。',history:[['08-02','鲤鱼1尾 2.4kg','2.4kg'],['07-22','翘嘴4尾 1.7kg','0.7kg'],['07-11','鳜鱼1尾 0.9kg','0.9kg'],['06-30','鲤鱼2尾 3.1kg','1.8kg'],['06-14','翘嘴7尾 2.0kg','0.5kg']]},reeds:{title:'东荆河 · 芦苇湾',fish:'鲫鱼、黄颡鱼',park:'芦苇湾村口空地',meta:'免费 · 到钓点1.1km',walk:'1.1km',time:'约17分钟',poison:'⚠ 保留60分钟返程',reason:'路线较长且雨后泥泞，若继续上涨应提前结束。',history:[['07-29','鲫鱼9尾 1.6kg','0.3kg'],['07-19','黄颡鱼6尾 1.1kg','0.3kg'],['07-07','鲫鱼14尾 2.0kg','0.4kg'],['06-23','鲫鱼5尾 0.8kg','0.2kg'],['06-10','黄颡鱼9尾 1.5kg','0.3kg']]}};
+  $$('.spot-trigger').forEach(function(el){el.onclick=function(){var s=spotData[el.dataset.spot];$('#spotTitle').textContent=s.title;$('#spotSub').textContent='主要鱼种：'+s.fish;$('#parkName').textContent=s.park;$('#parkMeta').textContent=s.meta;$('#walkDistance').textContent=s.walk;$('#walkTime').textContent=s.time;$('#poisonTitle').textContent=s.poison;$('#poisonReason').textContent=s.reason;var html='';s.history.forEach(function(r){html+='<div class="catch-mini"><span>'+r[0]+'</span><span>'+r[1]+'</span><b>日最大 '+r[2]+'</b></div>'});$('#spotHistory').innerHTML=html;openSheet('spotSheet')}});
+
+  var catches=[{fish:'鳊鱼',qty:3,weight:1.8}],fishOptions=['鲫鱼','鳊鱼','草鱼','翘嘴','鳜鱼','鳡鱼','其他'];function renderCatches(){var html='';catches.forEach(function(item,i){var opts='';fishOptions.forEach(function(f){opts+='<option '+(f===item.fish?'selected':'')+'>'+f+'</option>'});html+='<div class="catch-row" data-i="'+i+'"><select class="row-fish">'+opts+'</select><input class="row-qty" type="number" min="1" value="'+item.qty+'" aria-label="数量"><input class="row-weight" type="number" min="0" step="0.1" value="'+item.weight+'" aria-label="重量kg"><button class="remove">×</button></div>'});$('#catchRows').innerHTML=html;$('#catchRows').querySelectorAll('.catch-row').forEach(function(row){var i=+row.dataset.i;row.querySelector('.row-fish').onchange=function(){catches[i].fish=this.value;updateTotals()};row.querySelector('.row-qty').oninput=function(){catches[i].qty=+this.value||0;updateTotals()};row.querySelector('.row-weight').oninput=function(){catches[i].weight=+this.value||0;updateTotals()};row.querySelector('.remove').onclick=function(){if(catches.length===1){toast('至少保留一条鱼获');return}catches.splice(i,1);renderCatches()}});updateTotals()}
+  function updateTotals(){var qty=0,weight=0;catches.forEach(function(x){qty+=x.qty;weight+=x.weight});$('#totalKinds').textContent=catches.length;$('#totalQty').textContent=qty;$('#totalWeight').textContent=weight.toFixed(1)}$('#addCatch').onclick=function(){catches.push({fish:'鲫鱼',qty:1,weight:0.5});renderCatches();toast('已添加一条鱼获')};renderCatches();
+  var photoUrls={catch:'',spot:'assets/fishing-spot-winter-demo.png'};function bindPhoto(input,img,placeholder,key){$(input).onchange=function(e){if(e.target.files.length){photoUrls[key]=URL.createObjectURL(e.target.files[0]);$(img).src=photoUrls[key];$(img).style.display='block';$(placeholder).style.display='none';toast(key==='catch'?'鱼获照片已添加':'钓点照片已添加')}}}bindPhoto('#catchPhotoInput','#catchPhotoPreview','#catchPhotoPlaceholder','catch');bindPhoto('#spotPhotoInput','#spotPhotoPreview','#spotPhotoPlaceholder','spot');
+  function showStep(id){$$('#log .step').forEach(function(s){s.classList.remove('active')});$(id).classList.add('active');$('#log').scrollTop=0}
+  $('#previewSubmit').onclick=function(){var qty=0,weight=0,html='';catches.forEach(function(x){qty+=x.qty;weight+=x.weight;html+='<div class="preview-row"><span>'+x.fish+' · '+x.qty+'尾</span><b>'+x.weight.toFixed(1)+'kg</b></div>'});$('#previewItems').innerHTML=html;$('#previewQty').textContent=qty;$('#previewWeight').textContent=weight.toFixed(1);$('#previewSpot').textContent=$('#logSpot').value;$('#previewDate').textContent=$('#logDate').value;$('#previewStation').textContent=$('#stationName').textContent+' '+$('#levelText').textContent+'m';$('#previewCatchPhoto').src=photoUrls.catch||'assets/fishing-spot-winter-demo.png';$('#previewSpotPhoto').src=photoUrls.spot;showStep('#logPreview')};$('#editLog').onclick=function(){showStep('#logForm')};$('#finalSubmit').onclick=function(){showStep('#logSuccess');toast('记录已正式保存')};$('#newLog').onclick=function(){showStep('#logForm')};
+  $('#historyInput').onchange=function(e){if(e.target.files.length){$('#historyUploadText').textContent='✓ 已导入 '+e.target.files.length+' 个历史文件';toast('历史鱼获已导入')}};
+  var chosenMethod='台钓';$$('.method-chip').forEach(function(c){c.onclick=function(){$$('.method-chip').forEach(function(x){x.classList.remove('selected')});c.classList.add('selected');chosenMethod=c.textContent;toast('已选择'+chosenMethod+'，点击下方保存')}});$('#applyMethod').onclick=function(){$('#commonMethod').textContent=chosenMethod;conditions.method=[chosenMethod];$('#cond-method').textContent=chosenMethod;$('#recMethod').textContent=chosenMethod;toast('常用钓法已保存，推荐数据已刷新')};$('#refreshProfile').onclick=function(){toast('统计数据已刷新')};
+  window.applyNativeHydrology=function(rows){if(!Array.isArray(rows))return;rows.forEach(function(row){for(var i=0;i<hydro.length;i++){if(hydro[i].name===row.name){hydro[i].level=+row.level;hydro[i].trend=row.trend}}});var selected=hydro[+$('#stationSelect').value];$('#levelText').textContent=selected.level.toFixed(2);$('#trendText').textContent=selected.trend;estimateTerrain();toast('长江水文网实时数据已同步')};window.onHydrologyFallback=function(){toast('水文网页暂不可用，已使用缓存数据')};if(window.AndroidHydrology&&window.AndroidHydrology.refresh)window.AndroidHydrology.refresh();
+</script>
+<script>
+  var $=function(s){return document.querySelector(s)},$$=function(s){return document.querySelectorAll(s)};
+  var timer;
+  function toast(msg){var t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(timer);timer=setTimeout(function(){t.classList.remove('show')},1800)}
+  function openSheet(id){$('#'+id).classList.add('open')}
+  function closeSheet(id){$('#'+id).classList.remove('open')}
+  $$('.sheet-close').forEach(function(b){b.onclick=function(){closeSheet(b.dataset.close)}});
+  $$('.backdrop').forEach(function(b){b.addEventListener('click',function(e){if(e.target===b)closeSheet(b.id)})});
+  $$('.nav button').forEach(function(btn){btn.onclick=function(){$$('.nav button,.page').forEach(function(el){el.classList.remove('active')});btn.classList.add('active');$('#'+btn.dataset.page).classList.add('active');$('#'+btn.dataset.page).scrollTop=0}});
+
+  var conditions={fish:['鲫鱼','鳊鱼'],time:['4小时'],distance:['40km内'],poison:['不接受'],method:['台钓'],budget:['≤ ¥150']};
+  var configs={
+    fish:{title:'选择目标鱼',sub:'可多选',multi:true,choices:['鲫鱼','鳊鱼','草鱼','翘嘴','鳜鱼','鳡鱼','其他']},
+    time:{title:'可用时间',sub:'预计本次完整出钓时间',choices:['2小时','4小时','6小时','半天','全天']},
+    distance:{title:'最远距离',sub:'从当前位置计算',choices:['20km内','40km内','60km内','100km内','不限']},
+    poison:{title:'是否接受跑毒',sub:'是否接受提前撤离或转移钓位',choices:['不接受','可接受轻度','可接受','仅提醒']},
+    method:{title:'钓法类型',sub:'选择本次钓法',choices:['台钓','路亚','海竿','船钓','耙子']},
+    budget:{title:'预计花费',sub:'包含交通、饵料、停车等',choices:['≤ ¥50','≤ ¥100','≤ ¥150','≤ ¥300','不限']}
+  };
+  var editingKey='fish';
+  $$('.condition').forEach(function(btn){btn.onclick=function(){
+    editingKey=btn.dataset.condition;var cfg=configs[editingKey];$('#conditionTitle').textContent=cfg.title;$('#conditionSub').textContent=cfg.sub;
+    $('#conditionChoices').innerHTML=cfg.choices.map(function(v){return '<button class="choice '+(conditions[editingKey].indexOf(v)>=0?'selected':'')+'" data-value="'+v+'">'+v+'</button>'}).join('');
+    $$('#conditionChoices .choice').forEach(function(c){c.onclick=function(){if(cfg.multi)c.classList.toggle('selected');else{$$('#conditionChoices .choice').forEach(function(x){x.classList.remove('selected')});c.classList.add('selected')}}});openSheet('conditionSheet');
+  }});
+  $('#saveCondition').onclick=function(){var chosen=[];$$('#conditionChoices .selected').forEach(function(c){chosen.push(c.dataset.value)});if(!chosen.length){toast('请至少选择一项');return}conditions[editingKey]=chosen;$('#cond-'+editingKey).textContent=chosen.join('、');if(editingKey==='method')$('#recMethod').textContent=chosen[0];if(editingKey==='fish')$('#recFish').textContent=chosen[0];closeSheet('conditionSheet');toast('条件已保存')};
+
+  var hydro=['寸滩','武隆','宜昌','沙市','莲花塘','汉口','九江','大通','七里山','湖口','茅坪(二)','三峡水库','龙王庙','丹江口水库'].map(function(name){return {name:name,level:NaN,trend:'--',measuredAt:null}});
+  var catches=[{fish:'鲫鱼',qty:1,weight:0}],fishOptions=['鲫鱼','鳊鱼','草鱼','翘嘴','鳜鱼','鳡鱼','其他'];
+  function renderCatches(){
+    $('#catchRows').innerHTML=catches.map(function(item,i){return '<div class="catch-row" data-i="'+i+'"><select class="row-fish">'+fishOptions.map(function(f){return '<option '+(f===item.fish?'selected':'')+'>'+f+'</option>'}).join('')+'</select><input class="row-qty" type="number" min="1" value="'+item.qty+'" aria-label="数量"><input class="row-weight" type="number" min="0" step="0.1" value="'+item.weight+'" aria-label="重量kg"><button class="remove">×</button></div>'}).join('');
+    $$('#catchRows .catch-row').forEach(function(row){var i=+row.dataset.i;row.querySelector('.row-fish').onchange=function(){catches[i].fish=this.value;updateTotals()};row.querySelector('.row-qty').oninput=function(){catches[i].qty=+this.value||0;updateTotals()};row.querySelector('.row-weight').oninput=function(){catches[i].weight=+this.value||0;updateTotals()};row.querySelector('.remove').onclick=function(){if(catches.length===1){toast('至少保留一条鱼获');return}catches.splice(i,1);renderCatches()}});updateTotals();
+  }
+  function updateTotals(){var qty=0,weight=0;catches.forEach(function(x){qty+=x.qty;weight+=x.weight});$('#totalKinds').textContent=catches.length;$('#totalQty').textContent=qty;$('#totalWeight').textContent=weight.toFixed(1)}
+  $('#addCatch').onclick=function(){catches.push({fish:'鲫鱼',qty:1,weight:0});renderCatches();toast('已添加一条鱼获')};renderCatches();
+  var photoUrls={catch:'',spot:''};
+  function bindPhoto(input,img,placeholder,key){$(input).onchange=function(e){if(e.target.files.length){photoUrls[key]=URL.createObjectURL(e.target.files[0]);$(img).src=photoUrls[key];$(img).style.display='block';$(placeholder).style.display='none';toast(key==='catch'?'鱼获照片已添加':'钓点照片已添加')}}}
+  bindPhoto('#catchPhotoInput','#catchPhotoPreview','#catchPhotoPlaceholder','catch');bindPhoto('#spotPhotoInput','#spotPhotoPreview','#spotPhotoPlaceholder','spot');
+  function showStep(id){$$('#log .step').forEach(function(s){s.classList.remove('active')});$(id).classList.add('active');$('#log').scrollTop=0}
+  $('#editLog').onclick=function(){showStep('#logForm')};
+  var chosenMethod='台钓';
+  function estimateTerrain(){}
+</script>
+<script>
+(function betaRuntime(){
+  'use strict';
+  var STORAGE_KEY='angler-atlas-beta-v1';
+  var state=loadState();
+  var currentLocation=state.location||null;
+  var selectedSpot=null;
+  var locationMap=null,locationMarker=null,spotsMap=null,spotMarkers=[];
+  var blankImage='data:image/svg+xml;charset=UTF-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="100%" height="100%" fill="#e9e6dd"/><text x="50%" y="50%" text-anchor="middle" fill="#77827d" font-size="15">未上传照片</text></svg>');
+
+  function loadState(){
+    try{
+      var saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+      return {spots:Array.isArray(saved.spots)?saved.spots:[],records:Array.isArray(saved.records)?saved.records:[],location:saved.location||null,method:saved.method||'台钓',conditions:saved.conditions||null};
+    }catch(error){return {spots:[],records:[],location:null,method:'台钓',conditions:null}}
+  }
+  function saveState(){
+    state.location=currentLocation;
+    state.conditions=conditions;
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+  }
+  function esc(value){return String(value==null?'':value).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function fmtCoord(n){return Number(n).toFixed(6)}
+  function fmtDate(value){var d=new Date(value+'T00:00:00');return isNaN(d)?value:(d.getMonth()+1)+'月'+d.getDate()+'日'}
+  function haversine(a,b){
+    if(!a||!b)return null;
+    var rad=Math.PI/180,dLat=(b.lat-a.lat)*rad,dLng=(b.lng-a.lng)*rad;
+    var x=Math.sin(dLat/2)**2+Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin(dLng/2)**2;
+    return 6371*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+  }
+  function today(){var d=new Date(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return d.getFullYear()+'-'+m+'-'+day}
+  function selectedHydro(){return hydro[+$('#stationSelect').value]||null}
+
+  function prepareMaps(){
+    var old=$('#locationMap'),fresh=old.cloneNode(false);
+    old.parentNode.replaceChild(fresh,old);
+    fresh.id='locationMap';
+    if(!window.L){
+      fresh.innerHTML='<p style="padding:20px;font-size:11px">在线地图加载失败，请检查网络后重开页面。</p>';
+      $('#spotsMap').innerHTML='<p style="padding:20px;font-size:11px">在线地图加载失败。</p>';
+      return;
+    }
+    var start=currentLocation||{lat:30.5928,lng:114.3055};
+    locationMap=L.map(fresh,{zoomControl:true}).setView([start.lat,start.lng],currentLocation?15:10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(locationMap);
+    locationMap.on('click',function(e){setPickedLocation(e.latlng.lat,e.latlng.lng,0,'地图选点')});
+    spotsMap=L.map('spotsMap',{zoomControl:true}).setView([start.lat,start.lng],currentLocation?12:10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(spotsMap);
+    if(currentLocation)setPickedLocation(currentLocation.lat,currentLocation.lng,currentLocation.accuracy||0,currentLocation.mode||'已保存定位',false);
+  }
+  function setPickedLocation(lat,lng,accuracy,mode,move){
+    currentLocation={lat:+lat,lng:+lng,accuracy:+accuracy||0,mode:mode||'定位'};
+    locationMode=mode||'定位';
+    picked=fmtCoord(lat)+','+fmtCoord(lng);
+    if(locationMap){
+      if(locationMarker)locationMarker.setLatLng([lat,lng]);else locationMarker=L.marker([lat,lng]).addTo(locationMap);
+      if(move!==false)locationMap.setView([lat,lng],16);
+    }
+    $('#pickedLocation').textContent='已选：'+fmtCoord(lat)+', '+fmtCoord(lng)+(accuracy?' · 精度约'+Math.round(accuracy)+'m':'');
+    $('#locationBtn').textContent='⌖ '+(mode==='系统定位'?'当前位置':'地图选点');
+    $$('.open-location').forEach(function(b){if(!b.textContent.includes('新增'))b.textContent='⌖ 已定位'});
+    autoResolveStation(lat,lng);
+    saveState();
+    renderSpots();
+  }
+  function autoResolveStation(lat,lng){
+    if(lat>=29.4&&lat<=31.8&&lng>=112.5&&lng<=116.2){
+      $('#stationSelect').value='5';
+      updateWaterCard();
+      toast('武汉区域已自动参考汉口水文站');
+    }
+  }
+  window.onNativeLocation=function(lat,lng,accuracy){setPickedLocation(lat,lng,accuracy,'系统定位');toast('真实定位已更新')};
+  window.onNativeLocationError=function(message){toast(message||'无法获取定位，请检查系统定位开关')};
+  $('#autoLocate').onclick=function(){
+    toast('正在获取系统定位…');
+    if(window.AndroidLocation&&AndroidLocation.request){AndroidLocation.request();return}
+    if(navigator.geolocation){navigator.geolocation.getCurrentPosition(function(p){window.onNativeLocation(p.coords.latitude,p.coords.longitude,p.coords.accuracy)},function(){window.onNativeLocationError('浏览器定位失败')},{enableHighAccuracy:true,timeout:12000})}
+    else window.onNativeLocationError('当前环境不支持定位');
+  };
+  $('#confirmLocation').onclick=function(){if(!currentLocation){toast('请先定位或在地图上选点');return}saveState();closeSheet('locationSheet');toast('定位已保存')};
+  $('#saveSpot').onclick=function(){
+    if(!currentLocation){toast('请先定位或在地图上选点');return}
+    var name=$('#newSpotName').value.trim();
+    if(!name){toast('请输入钓点名称');return}
+    var spot={id:'spot-'+Date.now(),name:name,lat:currentLocation.lat,lng:currentLocation.lng,createdAt:new Date().toISOString(),winterLevel:null,hasWinterPhoto:false};
+    state.spots.push(spot);selectedSpot=spot;$('#newSpotName').value='';saveState();renderSpots();closeSheet('locationSheet');toast('钓点已保存');
+  };
+
+  function renderSpots(){
+    $('#spotCount').textContent=state.spots.length+'个';
+    var list=$('#spotList');
+    if(!state.spots.length)list.innerHTML='<article class="card"><p class="sheet-sub" style="margin:0">还没有钓点，点击右上角新增。</p></article>';
+    else list.innerHTML=state.spots.map(function(s){
+      var records=state.records.filter(function(r){return r.spotId===s.id}),fish={};
+      records.forEach(function(r){r.catches.forEach(function(c){fish[c.fish]=(fish[c.fish]||0)+c.qty})});
+      var fishText=Object.keys(fish).sort(function(a,b){return fish[b]-fish[a]}).slice(0,3).join(' · ')||'暂无鱼获记录';
+      var dist=haversine(currentLocation,s);
+      return '<button class="spot beta-spot" data-id="'+esc(s.id)+'" style="width:100%;border:0;color:inherit;text-align:left"><span class="star">★</span><div><h3>'+esc(s.name)+'</h3><p>'+esc(fishText)+'</p><small>'+records.length+'次记录<span class="parking">'+fmtCoord(s.lat)+', '+fmtCoord(s.lng)+'</span></small></div><span class="distance">'+(dist==null?'--':dist.toFixed(1)+'km')+'</span></button>';
+    }).join('');
+    $$('.beta-spot').forEach(function(el){el.onclick=function(){openSpot(el.dataset.id)}});
+    var currentSection=$('#sectionSelect').value,currentLog=$('#logSpot').value;
+    $('#sectionSelect').innerHTML=state.spots.length?state.spots.map(function(s){return '<option value="'+esc(s.id)+'">钓点断面：'+esc(s.name)+'</option>'}).join(''):'<option value="">钓点断面：请先保存钓点</option>';
+    $('#logSpot').innerHTML=state.spots.length?state.spots.map(function(s){return '<option value="'+esc(s.id)+'">'+esc(s.name)+'</option>'}).join(''):'<option value="">请先新增钓点</option>';
+    if(state.spots.some(function(s){return s.id===currentSection}))$('#sectionSelect').value=currentSection;
+    if(state.spots.some(function(s){return s.id===currentLog}))$('#logSpot').value=currentLog;
+    renderSpotMarkers();runRecommendation();
+  }
+  function renderSpotMarkers(){
+    if(!spotsMap)return;
+    spotMarkers.forEach(function(m){spotsMap.removeLayer(m)});spotMarkers=[];
+    state.spots.forEach(function(s){var m=L.marker([s.lat,s.lng]).addTo(spotsMap).bindTooltip(s.name);m.on('click',function(){openSpot(s.id)});spotMarkers.push(m)});
+    if(state.spots.length){var bounds=L.latLngBounds(state.spots.map(function(s){return [s.lat,s.lng]}));if(currentLocation)bounds.extend([currentLocation.lat,currentLocation.lng]);spotsMap.fitBounds(bounds.pad(.18),{maxZoom:15})}
+  }
+  function openSpot(id){
+    selectedSpot=state.spots.find(function(s){return s.id===id});if(!selectedSpot)return;
+    var records=state.records.filter(function(r){return r.spotId===id}).sort(function(a,b){return b.date.localeCompare(a.date)}).slice(0,5);
+    var fish={};records.forEach(function(r){r.catches.forEach(function(c){fish[c.fish]=(fish[c.fish]||0)+c.qty})});
+    $('#spotTitle').textContent=selectedSpot.name;
+    $('#spotSub').textContent=Object.keys(fish).length?'主要鱼种：'+Object.keys(fish).sort(function(a,b){return fish[b]-fish[a]}).slice(0,3).join('、'):'尚无鱼获记录';
+    $('#spotCoords').textContent=fmtCoord(selectedSpot.lat)+', '+fmtCoord(selectedSpot.lng)+'（WGS84）';
+    $('#spotPhotoDetail').style.display='none';
+    $('#spotHistory').innerHTML=records.length?records.map(function(r){var total=Math.max.apply(null,r.catches.map(function(c){return c.weight}));return '<div class="catch-mini"><span>'+esc(fmtDate(r.date))+'</span><span>'+esc(r.catches.map(function(c){return c.fish+c.qty+'尾'}).join('、'))+'</span><b>日最大 '+total.toFixed(1)+'kg</b></div>'}).join(''):'<p class="sheet-sub">尚无记录</p>';
+    openSheet('spotSheet');
+  }
+  function gcj02(lat,lng){
+    if(lng<72.004||lng>137.8347||lat<0.8293||lat>55.8271)return {lat:lat,lng:lng};
+    function tLat(x,y){return -100+2*x+3*y+.2*y*y+.1*x*y+.2*Math.sqrt(Math.abs(x))+(20*Math.sin(6*x*Math.PI)+20*Math.sin(2*x*Math.PI))*2/3+(20*Math.sin(y*Math.PI)+40*Math.sin(y/3*Math.PI))*2/3+(160*Math.sin(y/12*Math.PI)+320*Math.sin(y*Math.PI/30))*2/3}
+    function tLng(x,y){return 300+x+2*y+.1*x*x+.1*x*y+.1*Math.sqrt(Math.abs(x))+(20*Math.sin(6*x*Math.PI)+20*Math.sin(2*x*Math.PI))*2/3+(20*Math.sin(x*Math.PI)+40*Math.sin(x/3*Math.PI))*2/3+(150*Math.sin(x/12*Math.PI)+300*Math.sin(x/30*Math.PI))*2/3}
+    var a=6378245,ee=.00669342162296594323,dLat=tLat(lng-105,lat-35),dLng=tLng(lng-105,lat-35),rad=lat/180*Math.PI,magic=Math.sin(rad);magic=1-ee*magic*magic;var sqrt=Math.sqrt(magic);
+    dLat=dLat*180/((a*(1-ee))/(magic*sqrt)*Math.PI);dLng=dLng*180/(a/sqrt*Math.cos(rad)*Math.PI);return {lat:lat+dLat,lng:lng+dLng};
+  }
+  function openNavigation(kind){
+    if(!selectedSpot){toast('请先选择钓点');return}
+    var p=gcj02(selectedSpot.lat,selectedSpot.lng);
+    if(window.AndroidNavigation){if(kind==='parking')AndroidNavigation.searchParking(p.lat,p.lng);else AndroidNavigation.navigate(p.lat,p.lng,selectedSpot.name);return}
+    var url=kind==='parking'?'https://uri.amap.com/search?keyword='+encodeURIComponent('停车场')+'&center='+p.lng+','+p.lat+'&src='+encodeURIComponent('野水簿'):'https://uri.amap.com/navigation?to='+p.lng+','+p.lat+','+encodeURIComponent(selectedSpot.name)+'&mode=car&policy=1&src='+encodeURIComponent('野水簿');
+    window.location.href=url;
+  }
+  $('#navigateSpot').onclick=function(){openNavigation('navigate')};
+  $('#parkingSearch').onclick=function(){openNavigation('parking')};
+
+  function runRecommendation(){
+    if(!state.spots.length){$('#score').textContent='等待数据';$('#recommendName').textContent='先添加一个真实钓点';$('#reason').textContent='保存钓点和出钓记录后，这里会按条件生成推荐。';$('#recDistance').textContent='距离待计算';return}
+    var ranked=state.spots.map(function(s){var rs=state.records.filter(function(r){return r.spotId===s.id}),weight=rs.reduce(function(n,r){return n+r.totalWeight},0),dist=haversine(currentLocation,s);return {spot:s,score:50+Math.min(35,rs.length*5)+Math.min(15,weight),dist:dist}}).sort(function(a,b){return b.score-a.score});
+    var top=ranked[0];$('#score').textContent='匹配 '+Math.round(top.score)+'%';$('#recommendName').textContent=top.spot.name;$('#reason').textContent=state.records.some(function(r){return r.spotId===top.spot.id})?'依据实际鱼获次数、重量和当前出钓条件排序。':'当前只有已保存坐标，积累鱼获后推荐会更准确。';$('#recDistance').textContent=top.dist==null?'距离待定位':top.dist.toFixed(1)+'km';
+  }
+  $('#reroll').onclick=function(){runRecommendation();toast(state.spots.length?'已按本机真实数据重新推荐':'请先保存钓点')};
+
+  catches=[{fish:'鲫鱼',qty:1,weight:0}];renderCatches();
+  photoUrls={catch:'',spot:''};
+  $('#logDate').value=today();
+  $('#previewSubmit').onclick=function(){
+    if(!$('#logSpot').value){toast('请先新增并选择钓点');return}
+    var valid=catches.filter(function(c){return c.qty>0&&c.weight>=0});if(!valid.length){toast('请至少填写一条鱼获');return}
+    var qty=0,weight=0;$('#previewItems').innerHTML=valid.map(function(x){qty+=x.qty;weight+=x.weight;return '<div class="preview-row"><span>'+esc(x.fish)+' · '+x.qty+'尾</span><b>'+x.weight.toFixed(1)+'kg</b></div>'}).join('');
+    var spot=state.spots.find(function(s){return s.id===$('#logSpot').value});$('#previewQty').textContent=qty;$('#previewWeight').textContent=weight.toFixed(1);$('#previewSpot').textContent=spot?spot.name:'--';$('#previewDate').textContent=$('#logDate').value;$('#previewStation').textContent=$('#stationName').textContent+' '+$('#levelText').textContent+'m';$('#previewCatchPhoto').src=photoUrls.catch||blankImage;$('#previewSpotPhoto').src=photoUrls.spot||blankImage;showStep('#logPreview');
+  };
+  $('#finalSubmit').onclick=function(){
+    var spot=state.spots.find(function(s){return s.id===$('#logSpot').value});if(!spot){toast('钓点不存在');return}
+    var items=catches.map(function(c){return {fish:c.fish,qty:+c.qty,weight:+c.weight}}),total=items.reduce(function(n,c){return n+c.weight},0),station=selectedHydro();
+    state.records.push({id:'record-'+Date.now(),spotId:spot.id,spotName:spot.name,date:$('#logDate').value||today(),catches:items,totalWeight:total,method:conditions.method[0],station:station?station.name:'',waterLevel:station&&Number.isFinite(station.level)?station.level:null,hasCatchPhoto:!!photoUrls.catch,hasSpotPhoto:!!photoUrls.spot});
+    saveState();renderSpots();renderHistory();renderStats();showStep('#logSuccess');toast('记录已保存到本机');
+  };
+  $('#newLog').onclick=function(){catches=[{fish:'鲫鱼',qty:1,weight:0}];renderCatches();photoUrls={catch:'',spot:''};$('#catchPhotoPreview').style.display='none';$('#spotPhotoPreview').style.display='none';$('#catchPhotoPlaceholder').style.display='grid';$('#spotPhotoPlaceholder').style.display='grid';showStep('#logForm')};
+
+  function monthRecords(){var n=new Date();return state.records.filter(function(r){var d=new Date(r.date+'T00:00:00');return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()})}
+  function yearRecords(){var y=new Date().getFullYear();return state.records.filter(function(r){return new Date(r.date+'T00:00:00').getFullYear()===y})}
+  function renderHistory(){
+    var month=monthRecords(),weight=month.reduce(function(n,r){return n+r.totalWeight},0),withCatch=month.filter(function(r){return r.totalWeight>0}).length;
+    $('#historySummary').textContent=month.length?'本月'+month.length+'次 · 总鱼获'+weight.toFixed(1)+'kg':'尚无出钓记录';$('#historyWeight').textContent=weight.toFixed(1);$('#historyTrips').textContent=month.length;$('#historyRate').textContent=month.length?Math.round(withCatch/month.length*100)+'%':'--';
+    var recent=state.records.slice().sort(function(a,b){return b.date.localeCompare(a.date)}).slice(0,30);
+    $('#historyList').innerHTML=recent.length?recent.map(function(r){return '<article class="history"><span class="badge">'+(r.waterLevel==null?'--':r.waterLevel.toFixed(2)+'m')+'</span><time>'+esc(fmtDate(r.date))+'</time><h3>'+esc(r.spotName)+'</h3><p>'+esc(r.catches.map(function(c){return c.fish+c.qty+'尾'}).join(' · '))+' · '+r.totalWeight.toFixed(1)+'kg</p></article>'}).join(''):'<article class="history"><p>还没有记录，去“录入”页提交第一次出钓。</p></article>';
+  }
+  function renderStats(){
+    var month=monthRecords(),year=yearRecords(),mw=month.reduce(function(n,r){return n+r.totalWeight},0),yw=year.reduce(function(n,r){return n+r.totalWeight},0),fish={},total=0;
+    state.records.forEach(function(r){r.catches.forEach(function(c){fish[c.fish]=(fish[c.fish]||0)+c.qty;total+=c.qty})});
+    $('#monthTrips').textContent=month.length;$('#monthWeight').textContent=mw.toFixed(1)+'kg';$('#yearTrips').textContent=year.length;$('#yearWeight').textContent=yw.toFixed(1)+'kg';
+    var names=Object.keys(fish).sort(function(a,b){return fish[b]-fish[a]}).slice(0,3);$('#commonFish').innerHTML=names.length?names.map(function(f,i){return '<span class="'+(i?'chip':'score')+'" '+(i?'style="background:#e2ece8;color:var(--teal)"':'')+'>'+esc(f)+' '+Math.round(fish[f]/total*100)+'%</span>'}).join(''):'<span class="chip" style="background:#e2ece8;color:var(--teal)">暂无数据</span>';
+  }
+  chosenMethod=state.method;$$('.method-chip').forEach(function(c){c.classList.toggle('selected',c.textContent===chosenMethod);c.onclick=function(){$$('.method-chip').forEach(function(x){x.classList.remove('selected')});c.classList.add('selected');chosenMethod=c.textContent}});$('#commonMethod').textContent=chosenMethod;
+  $('#applyMethod').onclick=function(){state.method=chosenMethod;conditions.method=[chosenMethod];$('#commonMethod').textContent=chosenMethod;$('#cond-method').textContent=chosenMethod;$('#recMethod').textContent=chosenMethod;saveState();runRecommendation();toast('常用钓法已保存')};
+  $('#refreshProfile').onclick=function(){renderStats();toast('统计已按本机记录刷新')};
+  $('#saveCondition').addEventListener('click',function(){saveState()});
+
+  $('#historyInput').onchange=function(e){
+    var file=e.target.files&&e.target.files[0];if(!file)return;
+    if(!/csv/i.test(file.name)){ $('#historyUploadText').textContent='已选择 '+e.target.files.length+' 张历史照片';toast('历史照片已选择，请在后续版本中逐条识别');return }
+    var reader=new FileReader();reader.onload=function(){
+      var lines=String(reader.result).split(/\r?\n/).filter(Boolean),added=0;
+      lines.slice(1).forEach(function(line){var p=line.split(','),spot=state.spots.find(function(s){return s.name.trim()===String(p[1]||'').trim()});if(!spot)return;var qty=+p[3]||0,weight=+p[4]||0;if(!p[0]||!p[2])return;state.records.push({id:'import-'+Date.now()+'-'+added,spotId:spot.id,spotName:spot.name,date:p[0].trim(),catches:[{fish:p[2].trim(),qty:qty,weight:weight}],totalWeight:weight,method:'导入',station:'',waterLevel:null});added++});saveState();renderHistory();renderStats();renderSpots();$('#historyUploadText').textContent='已导入 '+added+' 条 CSV 记录';toast('历史记录导入完成')};reader.readAsText(file,'UTF-8');
+  };
+
+  hydro.forEach(function(s){s.level=NaN;s.trend='--';s.measuredAt=null});
+  function updateWaterCard(){
+    var s=selectedHydro();$('#stationName').textContent=s?s.name:'--';$('#levelText').textContent=s&&Number.isFinite(s.level)?s.level.toFixed(2):'--';$('#trendText').textContent=s?s.trend:'--';$('#waterMeasuredAt').textContent=s&&s.measuredAt?formatMeasuredAt(s.measuredAt):'尚未获取';estimateTerrain();
+  }
+  function formatMeasuredAt(value){var n=+value;if(!Number.isFinite(n))return String(value||'');var d=new Date(n<1e12?n*1000:n);return isNaN(d)?String(value):String(d.getMonth()+1).padStart(2,'0')+'月'+String(d.getDate()).padStart(2,'0')+'日 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+  window.applyNativeHydrology=function(rows){
+    if(!Array.isArray(rows)||!rows.length){window.onHydrologyFallback();return}
+    rows.forEach(function(row){var s=hydro.find(function(x){return x.name===row.name});if(s){s.level=+row.level;s.trend=row.trend||'--';s.measuredAt=row.measuredAt}});updateWaterCard();toast('实时水位已从长江水文网页更新');
+  };
+  window.onHydrologyFallback=function(){updateWaterCard();toast('实时水位获取失败，请稍后重试')};
+  $('#stationSelect').onchange=updateWaterCard;
+  $('#refreshWater').onclick=function(){if(window.AndroidHydrology&&AndroidHydrology.refresh){toast('正在访问长江水文网…');AndroidHydrology.refresh()}else toast('请在 Android Beta 中使用在线水位')};
+  estimateTerrain=function(){
+    var current=parseFloat($('#levelText').textContent),low=parseFloat($('#winterLevel').value);
+    if(!Number.isFinite(current)||!Number.isFinite(low)){ $('#depthText').textContent='--';$('#estimateResult').textContent='需要实时水位、冬季照片和照片对应水位';return }
+    var depth=Math.max(0,current-low);$('#depthText').textContent=depth.toFixed(2);$('#estimateResult').textContent='水位差估算 '+depth.toFixed(2)+'m（Beta 参考值，非测深数据）';var n=Math.max(0,Math.min(1,depth/4)),y=78-n*42;$('#waterRect').setAttribute('y',y);$('#waterRect').setAttribute('height',122-y);$('#waveRect').setAttribute('y',y);$('#waveRect').setAttribute('height',122-y);
+  };
+  $('#sectionSelect').onchange=function(){var s=state.spots.find(function(x){return x.id===$('#sectionSelect').value});$('#winterLevel').value=s&&s.winterLevel!=null?s.winterLevel:'';$('#winterStatus').textContent=s&&s.hasWinterPhoto?'已关联该钓点冬季低水位照片':'尚未上传照片和对应水位';estimateTerrain()};
+  $('#estimateBtn').onclick=estimateTerrain;
+  $('#winterInput').onchange=function(e){var file=e.target.files&&e.target.files[0],spot=state.spots.find(function(x){return x.id===$('#sectionSelect').value});if(!file||!spot){toast('请先选择钓点断面');return}spot.hasWinterPhoto=true;$('#winterPhoto').src=URL.createObjectURL(file);$('#winterPhoto').style.display='block';$('#winterStatus').textContent='照片已关联，请填写当时水位';saveState()};
+  $('#winterLevel').onchange=function(){var spot=state.spots.find(function(x){return x.id===$('#sectionSelect').value});if(spot){spot.winterLevel=parseFloat(this.value);saveState()}estimateTerrain()};
+
+  $$('.nav button').forEach(function(btn){btn.addEventListener('click',function(){setTimeout(function(){if(spotsMap)spotsMap.invalidateSize();if(locationMap)locationMap.invalidateSize()},80)})});
+  $$('.open-location').forEach(function(b){b.onclick=function(){openSheet('locationSheet');setTimeout(function(){if(locationMap)locationMap.invalidateSize()},100)}});
+  $('#locationBtn').onclick=function(){openSheet('locationSheet');setTimeout(function(){if(locationMap)locationMap.invalidateSize()},100)};
+  if(state.conditions){Object.keys(state.conditions).forEach(function(k){if(conditions[k]){conditions[k]=state.conditions[k];var el=$('#cond-'+k);if(el)el.textContent=conditions[k].join('、')}})}
+  $('#todayMeta').textContent=new Date().toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'short'})+' · Beta 数据以实际录入为准';
+  $$('#logPreview .preview-row').forEach(function(row){if(row.firstElementChild&&row.firstElementChild.textContent==='天气')row.lastElementChild.textContent='尚未同步'});
+  prepareMaps();renderSpots();renderHistory();renderStats();updateWaterCard();
+})();
+</script>
+</body>
+</html>

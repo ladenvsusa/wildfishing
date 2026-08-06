@@ -1,0 +1,16 @@
+# Android / Gradle
+.gradle/
+**/build/
+local.properties
+*.jks
+*.keystore
+
+# IDE / OS
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Generated packages
+angler-atlas-demo-package.zip
+angler-atlas-beta-package.zip
