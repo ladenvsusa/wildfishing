@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -27,6 +28,7 @@ import java.util.List;
 
 /** Native Android shell for the Angler Atlas beta. */
 public class MainActivity extends Activity {
+    private static final String TAG = "AnglerAtlasLocation";
     private static final int WEB_FILE_CHOOSER = 43;
     private static final int LOCATION_PERMISSION = 55;
 
@@ -105,6 +107,7 @@ public class MainActivity extends Activity {
     }
 
     private void requestLocation() {
+        Log.i(TAG, "System location requested; permission=" + hasLocationPermission());
         if (!hasLocationPermission()) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION);
@@ -153,6 +156,8 @@ public class MainActivity extends Activity {
     }
 
     private void sendLocation(Location location) {
+        Log.i(TAG, "Location delivered: provider=" + location.getProvider()
+            + ", accuracy=" + location.getAccuracy());
         String script = "window.onNativeLocation && window.onNativeLocation("
             + location.getLatitude() + "," + location.getLongitude() + ","
             + location.getAccuracy() + ");";
@@ -160,6 +165,7 @@ public class MainActivity extends Activity {
     }
 
     private void sendLocationError(String message) {
+        Log.w(TAG, "Location failed: " + message);
         String script = "window.onNativeLocationError && window.onNativeLocationError("
             + JSONObject.quote(message) + ");";
         webView.evaluateJavascript(script, null);
